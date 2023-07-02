@@ -14,18 +14,21 @@ CORS(app)
 def all_users():
     response = {'message': 'read'}
 
-    script_path = os.path.join(path, 'scripts/test.sh')
+    script_path = os.path.join(path, 'scripts\\test.sh')
+    execution = execute(script_path, "amir")
 
-    success = execute(script_path, "amir")
+    print(script_path)
 
-    print(success)
+    status_code = 0
 
-    if success:
+    if execution:
+        status_code = 200
         response['status'] = 'success'
     else:
+        status_code = 500
         response['status'] = 'error'
 
-    return jsonify(response)
+    return jsonify(response), status_code
 
 
 @app.route('/api/users', methods=['POST'])
