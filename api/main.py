@@ -1,7 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+import os
+
 from api.config.config import path
+from api.functions.execute import execute
 
 app = Flask(__name__)
 CORS(app)
@@ -9,7 +12,18 @@ CORS(app)
 
 @app.route('/api/users', methods=['GET'])
 def all_users():
-    response = {'message': 'read', 'path': path}
+    response = {'message': 'read'}
+
+    script_path = os.path.join(path, 'scripts/test.sh')
+
+    success = execute(script_path, "amir")
+
+    print(success)
+
+    if success:
+        response['status'] = 'success'
+    else:
+        response['status'] = 'error'
 
     return jsonify(response)
 
