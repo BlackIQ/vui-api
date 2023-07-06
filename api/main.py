@@ -26,6 +26,32 @@ def apiKey(func):
     return decorated_function
 
 
+@app.route('/api/auth/login', methods=['POST'])
+def login_user():
+    response = {}
+
+    cursor, connection = database()
+
+    username = request.json['username']
+    password = request.json['password']
+
+    cursor.execute(
+        'SELECT * FROM USERS WHERE username = ? AND password = ? AND isAdmin = true', (username, password,))
+
+    result = cursor.fetchall()
+
+    connection.close()
+
+    if len(result) > 0:
+        response['message'] = "Welcome"
+
+        return jsonify(response), 200
+    else:
+        response['message'] = "Sorry, username or password is incorrect"
+
+        return jsonify(response), 401
+
+
 @app.route('/api/users', methods=['GET'])
 @apiKey
 def all_users():
@@ -106,6 +132,12 @@ def create_user():
 
         return jsonify(response), 500
     else:
+        cursor.execute(
+            'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, isAdmin,))
+
+        connection.commit()
+        connection.close()
+
         response['message'] = "Admin created"
 
         return jsonify(response), 200
