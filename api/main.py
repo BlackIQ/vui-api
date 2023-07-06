@@ -70,13 +70,16 @@ def create_user():
     password = request.json['password']
     isAdmin = request.json['isAdmin']
 
-    script_path = os.path.join(path, 'scripts/test.sh')
-    execution = execute(script_path, "amir")
+    if isAdmin == False:
+        script_path = os.path.join(path, 'scripts/create.sh')
+        execution = execute(script_path, username, password)
 
-    if execution:
-        response['status'] = 'success'
-    else:
-        response['status'] = 'error'
+        print(execution)
+
+        if execution:
+            response['status'] = 'success'
+        else:
+            response['status'] = 'error'
 
     cursor.execute(
         'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, isAdmin))
