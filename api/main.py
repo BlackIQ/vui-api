@@ -45,8 +45,6 @@ def all_users():
 
     result = cursor.fetchone()
 
-    print(result)
-
     cAll = result[0]
     cAdmins = result[1]
     cUsers = result[2]
@@ -64,7 +62,7 @@ def all_users():
     for record in execution:
         user = {
             "id": record[0],
-            "name": record[1],
+            "username": record[1],
             "password": record[2],
             "isAdmin": record[3]
         }
