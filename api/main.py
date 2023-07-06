@@ -1,10 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
+from functools import wraps
 import os
 
 
-from api.config.config import path
+from api.config.config import path, env
 from api.database.sqlite import database
 from api.functions.execute import execute
 
@@ -12,7 +13,21 @@ app = Flask(__name__)
 CORS(app)
 
 
+def apiKey(func):
+    @wraps(func)
+    def decorated_function(*args, **kwargs):
+        api_key = request.headers.get('apiKey')
+
+        if api_key and api_key == env["API_KEY"]:
+            return func(*args, **kwargs)
+        else:
+            return jsonify({'message': 'Unauthorized'}), 401
+
+    return decorated_function
+
+
 @app.route('/api/users', methods=['GET'])
+@apiKey
 def all_users():
     response = {}
 
@@ -60,7 +75,8 @@ def all_users():
     return jsonify(response), 200
 
 
-@ app.route('/api/users', methods=['POST'])
+@app.route('/api/users', methods=['POST'])
+@apiKey
 def create_user():
     response = {}
 
@@ -77,7 +93,7 @@ def create_user():
         if execution:
 
             cursor.execute(
-                'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, isAdmin))
+                'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, isAdmin,))
 
             connection.commit()
             connection.close()
@@ -95,7 +111,8 @@ def create_user():
         return jsonify(response), 200
 
 
-@ app.route('/api/users/<username>', methods=['PATCH'])
+@app.route('/api/users/<username>', methods=['PATCH'])
+@apiKey
 def update_user(id):
     response = {}
 
@@ -104,9 +121,12 @@ def update_user(id):
     return jsonify(response), 404
 
 
-@ app.route('/api/users/<username>', methods=['DELETE'])
+@app.route('/api/users/<username>', methods=['DELETE'])
+@apiKey
 def delete_user(username):
     response = {}
+
+    username = username.split('/')[-1]
 
     cursor, connection = database()
 
@@ -115,7 +135,7 @@ def delete_user(username):
 
     if execution:
         cursor.execute(
-            'DELETE FROM USERS WHERE username = ?', (username))
+            'DELETE FROM USERS WHERE username = ?', (username,))
 
         connection.commit()
         connection.close()
