@@ -45,14 +45,16 @@ def all_users():
 
     result = cursor.fetchone()
 
+    print(result)
+
     cAll = result[0]
     cAdmins = result[1]
     cUsers = result[2]
 
     count = {
         "total": cAll,
-        "users": cUsers,
-        "admins": cAdmins
+        "users": 0 if cUsers == None else cUsers,
+        "admins": 0 if cAdmins == None else cAdmins,
     }
 
     response['count'] = count
