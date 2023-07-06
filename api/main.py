@@ -74,56 +74,56 @@ def create_user():
         script_path = os.path.join(path, 'scripts/create.sh')
         execution = execute(script_path, username, password)
 
-        print(execution)
-
         if execution:
-            response['status'] = 'success'
+
+            cursor.execute(
+                'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, isAdmin))
+
+            connection.commit()
+            connection.close()
+
+            response['message'] = "User created"
+
+            return jsonify(response), 200
         else:
-            response['status'] = 'error'
+            response['message'] = 'Sorry, an error!'
 
-    cursor.execute(
-        'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, isAdmin))
+        return jsonify(response), 500
+    else:
+        response['message'] = "Admin created"
 
-    connection.commit()
-    connection.close()
-
-    response['message'] = "User created"
-
-    return jsonify(response), 200
+        return jsonify(response), 200
 
 
-@ app.route('/api/users/<id>', methods=['PATCH'])
+@ app.route('/api/users/<username>', methods=['PATCH'])
 def update_user(id):
     response = {}
 
-    cursor, connection = database()
+    response['message'] = "User updating is not available"
 
-    username = request.json['username']
-    password = request.json['password']
-
-    cursor.execute(
-        'UPDATE USERS SET username = ?, password = ? WHERE id = ?', (username, password, id))
-
-    connection.commit()
-    connection.close()
-
-    response['message'] = "User updated"
-
-    return jsonify(response), 200
+    return jsonify(response), 404
 
 
-@ app.route('/api/users/<id>', methods=['DELETE'])
-def delete_user(id):
+@ app.route('/api/users/<username>', methods=['DELETE'])
+def delete_user(username):
     response = {}
 
     cursor, connection = database()
 
-    cursor.execute(
-        'DELETE FROM USERS WHERE id = ?', (id))
+    script_path = os.path.join(path, 'scripts/delete.sh')
+    execution = execute(script_path, username)
 
-    connection.commit()
-    connection.close()
+    if execution:
+        cursor.execute(
+            'DELETE FROM USERS WHERE username = ?', (username))
 
-    response['message'] = "User deleted"
+        connection.commit()
+        connection.close()
 
-    return jsonify(response), 200
+        response['message'] = "User deleted"
+
+        return jsonify(response), 200
+    else:
+        response['message'] = 'Sorry, an error!'
+
+        return jsonify(response), 500
