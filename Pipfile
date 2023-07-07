@@ -9,6 +9,7 @@ flask-cors = "*"
 python-dotenv = "*"
 flask-jwt-extended = "*"
 pyjwt = "*"
+python-telegram-bot = "*"
 
 [dev-packages]
 
