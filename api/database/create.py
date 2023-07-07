@@ -4,13 +4,23 @@ import sqlite3
 conn = sqlite3.connect('vui.db')
 cursor = conn.cursor()
 
-# Create the User table
+# Create the Admins table
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS USERS (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT,
-        password TEXT,
-        isAdmin BOOLEAN
+        username VARCHAR(50),
+        password VARCHAR(50),
+        isAdmin BOOLEAN,
+        owner VARCHAR(50)
+    )
+''')
+
+# Create the Gods table
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS GODS (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username VARCHAR(50),
+        password VARCHAR(50)
     )
 ''')
 
