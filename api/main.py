@@ -40,7 +40,7 @@ def login_god():
     password = request.json['password']
 
     cursor.execute(
-        'SELECT * FROM GODS WHERE username = ? AND password = ?', (username, password,))
+        'SELECT * FROM USERS WHERE username = ? AND password = ? AND role = ?', (username, password, "god",))
 
     result = cursor.fetchall()
     connection.close()
@@ -50,6 +50,7 @@ def login_god():
             "id": result[0][0],
             "username": result[0][1],
             "password": result[0][2],
+            "role": result[0][3]
         }
 
         messages = ["New login", "\n", "Role: God", f"Username: {username}"]
@@ -79,7 +80,7 @@ def register_god():
     password = request.json['password']
 
     cursor.execute(
-        'INSERT INTO GODS (username, password) VALUES (?, ?)', (username, password,))
+        'INSERT INTO USERS (username, password, role) VALUES (?, ?, ?)', (username, password, "god",))
 
     connection.commit()
     connection.close()
@@ -109,7 +110,7 @@ def login_admin():
     password = request.json['password']
 
     cursor.execute(
-        'SELECT * FROM USERS WHERE username = ? AND password = ? AND isAdmin = true', (username, password,))
+        'SELECT * FROM USERS WHERE username = ? AND password = ? AND role = ?', (username, password, "admin",))
 
     result = cursor.fetchall()
     connection.close()
@@ -119,7 +120,7 @@ def login_admin():
             "id": result[0][0],
             "username": result[0][1],
             "password": result[0][2],
-            "isAdmin": result[0][3]
+            "role": result[0][3]
         }
 
         messages = ["New login", "\n", "Role: Admin", f"Username: {username}"]
@@ -149,7 +150,7 @@ def register_admin():
     password = request.json['password']
 
     cursor.execute(
-        'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, True,))
+        'INSERT INTO USERS (username, password, role) VALUES (?, ?, ?)', (username, password, "admin",))
 
     connection.commit()
     connection.close()
@@ -172,7 +173,7 @@ def add_admins():
 
     cursor, connection = database()
 
-    cursor.execute("SELECT * FROM USERS WHERE isAdmin = 1")
+    cursor.execute("SELECT * FROM USERS WHERE role = ?", ("admin",))
     execution = cursor.fetchall()
 
     users = []
@@ -182,6 +183,7 @@ def add_admins():
             "id": record[0],
             "username": record[1],
             "password": record[2],
+            "role": record[3]
         }
         users.append(user)
 
@@ -203,7 +205,7 @@ def all_users():
 
     cursor, connection = database()
 
-    cursor.execute("SELECT * FROM USERS WHERE isAdmin = 0")
+    cursor.execute("SELECT * FROM USERS WHERE role = ?", ("client",))
     execution = cursor.fetchall()
 
     users = []
@@ -213,7 +215,7 @@ def all_users():
             "id": record[0],
             "username": record[1],
             "password": record[2],
-            "isAdmin": record[3]
+            "role": record[3]
         }
         users.append(user)
 
@@ -232,7 +234,8 @@ def all_for_owner(owner):
 
     cursor, connection = database()
 
-    cursor.execute("SELECT * FROM USERS WHERE owner = ?", (owner,))
+    cursor.execute(
+        "SELECT * FROM USERS WHERE role = ? AND owner = ?", ("client", owner,))
     execution = cursor.fetchall()
 
     users = []
@@ -242,7 +245,7 @@ def all_for_owner(owner):
             "id": record[0],
             "username": record[1],
             "password": record[2],
-            "isAdmin": record[3]
+            "role": record[3]
         }
         users.append(user)
 
@@ -265,29 +268,29 @@ def create_client():
     password = request.json['password']
     owner = request.json['owner']
 
-    script_path = os.path.join(path, 'scripts/create.sh')
-    execution = execute(script_path, username, password)
+    # script_path = os.path.join(path, 'scripts/create.sh')
+    # execution = execute(script_path, username, password)
 
-    if execution:
-        cursor.execute(
-            'INSERT INTO USERS (username, password, isAdmin, owner) VALUES (?, ?, ?, ?)', (username, password, False, owner,))
+    # if execution:
+    cursor.execute(
+        'INSERT INTO USERS (username, password, role, owner) VALUES (?, ?, ?, ?)', (username, password, "client", owner,))
 
-        connection.commit()
-        connection.close()
+    connection.commit()
+    connection.close()
 
-        messages = ["New user", "\n", "Role: Client",
-                    f"Username: {username}", f"Creator: {owner}"]
-        message = "\n".join(messages)
+    messages = ["New user", "\n", "Role: Client",
+                f"Username: {username}", f"Creator: {owner}"]
+    message = "\n".join(messages)
 
-        send(message, 6079800600)
+    send(message, 6079800600)
 
-        response['message'] = "Client created"
+    response['message'] = "Client created"
 
-        return jsonify(response), 200
-    else:
-        response['message'] = 'Sorry, an error!'
+    return jsonify(response), 200
+    # else:
+    #     response['message'] = 'Sorry, an error!'
 
-    return jsonify(response), 500
+    # return jsonify(response), 500
 
 
 # Update Client
@@ -311,26 +314,26 @@ def delete_client(username):
 
     cursor, connection = database()
 
-    script_path = os.path.join(path, 'scripts/delete.sh')
-    execution = execute(script_path, username)
+    # script_path = os.path.join(path, 'scripts/delete.sh')
+    # execution = execute(script_path, username)
 
-    if execution:
-        cursor.execute(
-            'DELETE FROM USERS WHERE username = ?', (username,))
+    # if execution:
+    cursor.execute(
+        'DELETE FROM USERS WHERE username = ?', (username,))
 
-        connection.commit()
-        connection.close()
+    connection.commit()
+    connection.close()
 
-        messages = ["Delete user", "\n",
-                    "Role: Client", f"Username: {username}"]
-        message = "\n".join(messages)
+    messages = ["Delete user", "\n",
+                "Role: Client", f"Username: {username}"]
+    message = "\n".join(messages)
 
-        send(message, 6079800600)
+    send(message, 6079800600)
 
-        response['message'] = "User deleted"
+    response['message'] = "User deleted"
 
-        return jsonify(response), 200
-    else:
-        response['message'] = 'Sorry, an error!'
+    return jsonify(response), 200
+    # else:
+    #     response['message'] = 'Sorry, an error!'
 
-        return jsonify(response), 500
+    #     return jsonify(response), 500
