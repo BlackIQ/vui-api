@@ -215,7 +215,8 @@ def all_users():
             "id": record[0],
             "username": record[1],
             "password": record[2],
-            "role": record[3]
+            "role": record[3],
+            "owner": record[4],
         }
         users.append(user)
 
