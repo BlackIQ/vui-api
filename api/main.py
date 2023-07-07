@@ -184,15 +184,44 @@ def add_admins():
 # ---------- Clients ----------
 
 
-# All Clients
-@app.route('/api/clients/<owner>', methods=['GET'])
+# All Clients Filter For Owner
+@app.route('/api/clients', methods=['GET'])
 @apiKey
-def all_clients(owner):
+def all_users():
     response = {}
 
     cursor, connection = database()
 
-    cursor.execute("SELECT * FROM USERS WHERE owner = ?", (owner))
+    cursor.execute("SELECT * FROM USERS WHERE isAdmin = 0")
+    execution = cursor.fetchall()
+
+    users = []
+
+    for record in execution:
+        user = {
+            "id": record[0],
+            "username": record[1],
+            "password": record[2],
+            "isAdmin": record[3]
+        }
+        users.append(user)
+
+    connection.close()
+
+    response['data'] = users
+
+    return jsonify(response), 200
+
+
+# All Clients Filter For Owner
+@app.route('/api/clients/<owner>', methods=['GET'])
+@apiKey
+def all_for_owner(owner):
+    response = {}
+
+    cursor, connection = database()
+
+    cursor.execute("SELECT * FROM USERS WHERE owner = ?", (owner,))
     execution = cursor.fetchall()
 
     users = []
@@ -230,7 +259,7 @@ def create_client():
 
     # if execution:
     cursor.execute(
-        'INSERT INTO USERS (username, password, isAdmin, owner) VALUES (?, ?, ?)', (username, password, False, owner,))
+        'INSERT INTO USERS (username, password, isAdmin, owner) VALUES (?, ?, ?, ?)', (username, password, False, owner,))
 
     connection.commit()
     connection.close()

@@ -27,4 +27,4 @@ def send(message, chatid):
     }
 
     req.post(
-        f"https://api.telegram.org/bot/{bot_token}/sendMessage", data=data)
+        f"https://api.telegram.org/bot{bot_token}/sendMessage", data=data)
