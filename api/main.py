@@ -225,6 +225,33 @@ def add_admins():
     return jsonify(response), 200
 
 
+# Delete Client
+@app.route('/api/admins/<username>', methods=['DELETE'])
+@apiKey
+def delete_admin(username):
+    response = {}
+
+    username = username.split('/')[-1]
+
+    cursor, connection = database()
+
+    cursor.execute(
+        'DELETE FROM USERS WHERE username = ?', (username,))
+
+    connection.commit()
+    connection.close()
+
+    messages = ["Delete user", "\n",
+                "Role: Admin", f"Username: {username}"]
+    message = "\n".join(messages)
+
+    send(message, 6079800600)
+
+    response['message'] = "User deleted"
+
+    return jsonify(response), 200
+
+
 # ---------- Clients ----------
 
 
