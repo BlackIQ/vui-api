@@ -1,33 +1,101 @@
+# Flask
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-from functools import wraps
+# Python libs
 import os
 
 
-from api.config.config import path, env
-from api.database.sqlite import database
-from api.functions.execute import execute
+# Middlewares
+from api.middlewares.apikey import apiKey
 
+# Config
+from api.config.config import path
+
+# Database
+from api.database.sqlite import database
+
+# Functions
+from api.functions.execute import execute
+from api.functions.message import send
+
+# Initate flask
 app = Flask(__name__)
+
+# Set CORS
 CORS(app)
 
 
-def apiKey(func):
-    @wraps(func)
-    def decorated_function(*args, **kwargs):
-        api_key = request.headers.get('apiKey')
+# ---------- Admins ----------
 
-        if api_key and api_key == env["API_KEY"]:
-            return func(*args, **kwargs)
-        else:
-            return jsonify({'message': 'Unauthorized'}), 401
-
-    return decorated_function
-
-
+# Login God
 @app.route('/api/auth/login', methods=['POST'])
-def login_user():
+@apiKey
+def login_god():
+    response = {}
+
+    cursor, connection = database()
+
+    username = request.json['username']
+    password = request.json['password']
+
+    cursor.execute(
+        'SELECT * FROM GODS WHERE username = ? AND password = ?', (username, password,))
+
+    result = cursor.fetchall()
+    connection.close()
+
+    if len(result) > 0:
+        username = result[0][1]
+
+        messages = ["New login", "\n", "Role: God", f"Username: {username}"]
+        message = "\n".join(messages)
+
+        send(message, 6079800600)
+
+        response['message'] = "Welcome"
+
+        return jsonify(response), 200
+    else:
+        response['message'] = "Sorry, username or password is incorrect"
+
+        return jsonify(response), 401
+
+
+# Register God
+@app.route('/api/auth/register', methods=['POST'])
+@apiKey
+def register_god():
+    response = {}
+
+    cursor, connection = database()
+
+    username = request.json['username']
+    password = request.json['password']
+
+    cursor.execute(
+        'INSERT INTO GODS (username, password) VALUES (?, ?)', (username, password,))
+
+    connection.commit()
+    connection.close()
+
+    messages = ["New user", "\n", "Role: God", f"Username: {username}"]
+    message = "\n".join(messages)
+
+    send(message, 6079800600)
+
+    response['message'] = "God created"
+
+    return jsonify(response), 200
+
+
+# ---------- Admins ----------
+
+
+# Login Admin
+@app.route('/api/admins/login', methods=['POST'])
+@apiKey
+def login_admin():
     response = {}
 
     cursor, connection = database()
@@ -39,10 +107,16 @@ def login_user():
         'SELECT * FROM USERS WHERE username = ? AND password = ? AND isAdmin = true', (username, password,))
 
     result = cursor.fetchall()
-
     connection.close()
 
     if len(result) > 0:
+        username = result[0][1]
+
+        messages = ["New login", "\n", "Role: Admin", f"Username: {username}"]
+        message = "\n".join(messages)
+
+        send(message, 6079800600)
+
         response['message'] = "Welcome"
 
         return jsonify(response), 200
@@ -52,36 +126,74 @@ def login_user():
         return jsonify(response), 401
 
 
-@app.route('/api/users', methods=['GET'])
+# Register Admin
+@app.route('/api/admins/register', methods=['POST'])
 @apiKey
-def all_users():
+def register_admin():
     response = {}
 
     cursor, connection = database()
 
-    cursor.execute("SELECT * FROM USERS")
-    execution = cursor.fetchall()
+    username = request.json['username']
+    password = request.json['password']
 
     cursor.execute(
-        "SELECT COUNT(*) AS cAll, \
-        SUM(CASE WHEN isAdmin = 1 THEN 1 ELSE 0 END) AS cAdmin, \
-        SUM(CASE WHEN isAdmin = 0 THEN 1 ELSE 0 END) AS cUsers \
-        FROM USERS"
-    )
+        'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, True,))
 
-    result = cursor.fetchone()
+    connection.commit()
+    connection.close()
 
-    cAll = result[0]
-    cAdmins = result[1]
-    cUsers = result[2]
+    messages = ["New user", "\n", "Role: Admin", f"Username: {username}"]
+    message = "\n".join(messages)
 
-    count = {
-        "total": cAll,
-        "users": 0 if cUsers == None else cUsers,
-        "admins": 0 if cAdmins == None else cAdmins,
-    }
+    send(message, 6079800600)
 
-    response['count'] = count
+    response['message'] = "Admin created"
+
+    return jsonify(response), 200
+
+
+# All Admins
+@app.route('/api/admins', methods=['GET'])
+@apiKey
+def add_admins():
+    response = {}
+
+    cursor, connection = database()
+
+    cursor.execute("SELECT * FROM USERS WHERE isAdmin = 1")
+    execution = cursor.fetchall()
+
+    users = []
+
+    for record in execution:
+        user = {
+            "id": record[0],
+            "username": record[1],
+            "password": record[2],
+        }
+        users.append(user)
+
+    connection.close()
+
+    response['data'] = users
+
+    return jsonify(response), 200
+
+
+# ---------- Clients ----------
+
+
+# All Clients
+@app.route('/api/clients/<owner>', methods=['GET'])
+@apiKey
+def all_clients(owner):
+    response = {}
+
+    cursor, connection = database()
+
+    cursor.execute("SELECT * FROM USERS WHERE owner = ?", (owner))
+    execution = cursor.fetchall()
 
     users = []
 
@@ -101,51 +213,47 @@ def all_users():
     return jsonify(response), 200
 
 
-@app.route('/api/users', methods=['POST'])
+# Create Client
+@app.route('/api/clients', methods=['POST'])
 @apiKey
-def create_user():
+def create_client():
     response = {}
 
     cursor, connection = database()
 
     username = request.json['username']
     password = request.json['password']
-    isAdmin = request.json['isAdmin']
+    owner = request.json['owner']
 
-    if isAdmin == False:
-        script_path = os.path.join(path, 'scripts/create.sh')
-        execution = execute(script_path, username, password)
+    script_path = os.path.join(path, 'scripts/create.sh')
+    execution = execute(script_path, username, password)
 
-        if execution:
+    # if execution:
+    cursor.execute(
+        'INSERT INTO USERS (username, password, isAdmin, owner) VALUES (?, ?, ?)', (username, password, False, owner,))
 
-            cursor.execute(
-                'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, isAdmin,))
+    connection.commit()
+    connection.close()
 
-            connection.commit()
-            connection.close()
+    messages = ["New user", "\n", "Role: Client",
+                f"Username: {username}", f"Creator: {owner}"]
+    message = "\n".join(messages)
 
-            response['message'] = "User created"
+    send(message, 6079800600)
 
-            return jsonify(response), 200
-        else:
-            response['message'] = 'Sorry, an error!'
+    response['message'] = "Client created"
 
-        return jsonify(response), 500
-    else:
-        cursor.execute(
-            'INSERT INTO USERS (username, password, isAdmin) VALUES (?, ?, ?)', (username, password, isAdmin,))
+    return jsonify(response), 200
+    # else:
+    #     response['message'] = 'Sorry, an error!'
 
-        connection.commit()
-        connection.close()
-
-        response['message'] = "Admin created"
-
-        return jsonify(response), 200
+    # return jsonify(response), 500
 
 
-@app.route('/api/users/<username>', methods=['PATCH'])
+# Update Client
+@app.route('/api/clients/<username>', methods=['PATCH'])
 @apiKey
-def update_user(id):
+def update_client(id):
     response = {}
 
     response['message'] = "User updating is not available"
@@ -153,9 +261,10 @@ def update_user(id):
     return jsonify(response), 404
 
 
-@app.route('/api/users/<username>', methods=['DELETE'])
+# Delete Client
+@app.route('/api/clients/<username>', methods=['DELETE'])
 @apiKey
-def delete_user(username):
+def delete_client(username):
     response = {}
 
     username = username.split('/')[-1]
