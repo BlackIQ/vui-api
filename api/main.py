@@ -46,7 +46,11 @@ def login_god():
     connection.close()
 
     if len(result) > 0:
-        username = result[0][1]
+        user = {
+            "id": result[0][0],
+            "username": result[0][1],
+            "password": result[0][2],
+        }
 
         messages = ["New login", "\n", "Role: God", f"Username: {username}"]
         message = "\n".join(messages)
@@ -54,6 +58,7 @@ def login_god():
         send(message, 6079800600)
 
         response['message'] = "Welcome"
+        response['user'] = user
 
         return jsonify(response), 200
     else:
@@ -110,7 +115,12 @@ def login_admin():
     connection.close()
 
     if len(result) > 0:
-        username = result[0][1]
+        user = {
+            "id": result[0][0],
+            "username": result[0][1],
+            "password": result[0][2],
+            "isAdmin": result[0][3]
+        }
 
         messages = ["New login", "\n", "Role: Admin", f"Username: {username}"]
         message = "\n".join(messages)
@@ -118,6 +128,7 @@ def login_admin():
         send(message, 6079800600)
 
         response['message'] = "Welcome"
+        response['user'] = user
 
         return jsonify(response), 200
     else:
@@ -257,26 +268,26 @@ def create_client():
     script_path = os.path.join(path, 'scripts/create.sh')
     execution = execute(script_path, username, password)
 
-    # if execution:
-    cursor.execute(
-        'INSERT INTO USERS (username, password, isAdmin, owner) VALUES (?, ?, ?, ?)', (username, password, False, owner,))
+    if execution:
+        cursor.execute(
+            'INSERT INTO USERS (username, password, isAdmin, owner) VALUES (?, ?, ?, ?)', (username, password, False, owner,))
 
-    connection.commit()
-    connection.close()
+        connection.commit()
+        connection.close()
 
-    messages = ["New user", "\n", "Role: Client",
-                f"Username: {username}", f"Creator: {owner}"]
-    message = "\n".join(messages)
+        messages = ["New user", "\n", "Role: Client",
+                    f"Username: {username}", f"Creator: {owner}"]
+        message = "\n".join(messages)
 
-    send(message, 6079800600)
+        send(message, 6079800600)
 
-    response['message'] = "Client created"
+        response['message'] = "Client created"
 
-    return jsonify(response), 200
-    # else:
-    #     response['message'] = 'Sorry, an error!'
+        return jsonify(response), 200
+    else:
+        response['message'] = 'Sorry, an error!'
 
-    # return jsonify(response), 500
+    return jsonify(response), 500
 
 
 # Update Client
@@ -309,6 +320,12 @@ def delete_client(username):
 
         connection.commit()
         connection.close()
+
+        messages = ["Delete user", "\n",
+                    "Role: Client", f"Username: {username}"]
+        message = "\n".join(messages)
+
+        send(message, 6079800600)
 
         response['message'] = "User deleted"
 
