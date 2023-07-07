@@ -300,29 +300,29 @@ def create_client():
     password = request.json['password']
     owner = request.json['owner']
 
-    # script_path = os.path.join(path, 'scripts/create.sh')
-    # execution = execute(script_path, username, password)
+    script_path = os.path.join(path, 'scripts/create.sh')
+    execution = execute(script_path, username, password)
 
-    # if execution:
-    cursor.execute(
-        'INSERT INTO USERS (username, password, role, owner) VALUES (?, ?, ?, ?)', (username, password, "client", owner,))
+    if execution:
+        cursor.execute(
+            'INSERT INTO USERS (username, password, role, owner) VALUES (?, ?, ?, ?)', (username, password, "client", owner,))
 
-    connection.commit()
-    connection.close()
+        connection.commit()
+        connection.close()
 
-    messages = ["New user", "\n", "Role: Client",
-                f"Username: {username}", f"Creator: {owner}"]
-    message = "\n".join(messages)
+        messages = ["New user", "\n", "Role: Client",
+                    f"Username: {username}", f"Creator: {owner}"]
+        message = "\n".join(messages)
 
-    send(message, 6079800600)
+        send(message, 6079800600)
 
-    response['message'] = "Client created"
+        response['message'] = "Client created"
 
-    return jsonify(response), 200
-    # else:
-    #     response['message'] = 'Sorry, an error!'
+        return jsonify(response), 200
+    else:
+        response['message'] = 'Sorry, an error!'
 
-    # return jsonify(response), 500
+    return jsonify(response), 500
 
 
 # Update Client
@@ -348,26 +348,26 @@ def delete_client(username):
 
     cursor, connection = database()
 
-    # script_path = os.path.join(path, 'scripts/delete.sh')
-    # execution = execute(script_path, username)
+    script_path = os.path.join(path, 'scripts/delete.sh')
+    execution = execute(script_path, username)
 
-    # if execution:
-    cursor.execute(
-        'DELETE FROM USERS WHERE username = ?', (username,))
+    if execution:
+        cursor.execute(
+            'DELETE FROM USERS WHERE username = ?', (username,))
 
-    connection.commit()
-    connection.close()
+        connection.commit()
+        connection.close()
 
-    messages = ["Delete user", "\n",
-                "Role: Client", f"Username: {username}"]
-    message = "\n".join(messages)
+        messages = ["Delete user", "\n",
+                    "Role: Client", f"Username: {username}"]
+        message = "\n".join(messages)
 
-    send(message, 6079800600)
+        send(message, 6079800600)
 
-    response['message'] = "User deleted"
+        response['message'] = "User deleted"
 
-    return jsonify(response), 200
-    # else:
-    #     response['message'] = 'Sorry, an error!'
+        return jsonify(response), 200
+    else:
+        response['message'] = 'Sorry, an error!'
 
-    #     return jsonify(response), 500
+        return jsonify(response), 500
