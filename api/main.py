@@ -78,9 +78,10 @@ def register_god():
 
     username = request.json['username']
     password = request.json['password']
+    chatid = request.json['chatid']
 
     cursor.execute(
-        'INSERT INTO USERS (username, password, role) VALUES (?, ?, ?)', (username, password, "god",))
+        'INSERT INTO USERS (username, password, role, chatid) VALUES (?, ?, ?, ?)', (username, password, "god", chatid,))
 
     connection.commit()
     connection.close()
@@ -91,6 +92,36 @@ def register_god():
     send(message, 6079800600)
 
     response['message'] = "God created"
+
+    return jsonify(response), 200
+
+
+# All Admins
+@app.route('/api/gods', methods=['GET'])
+@apiKey
+def all_gods():
+    response = {}
+
+    cursor, connection = database()
+
+    cursor.execute("SELECT * FROM USERS WHERE role = ?", ("god",))
+    execution = cursor.fetchall()
+
+    users = []
+
+    for record in execution:
+        user = {
+            "id": record[0],
+            "username": record[1],
+            "password": record[2],
+            "role": record[3],
+            "chatid": record[4],
+        }
+        users.append(user)
+
+    connection.close()
+
+    response['data'] = users
 
     return jsonify(response), 200
 
@@ -216,7 +247,7 @@ def all_users():
             "username": record[1],
             "password": record[2],
             "role": record[3],
-            "owner": record[4],
+            "owner": record[5],
         }
         users.append(user)
 
@@ -297,8 +328,10 @@ def create_client():
 # Update Client
 @app.route('/api/clients/<username>', methods=['PATCH'])
 @apiKey
-def update_client(id):
+def update_client(username):
     response = {}
+
+    username = username.split('/')[-1]
 
     response['message'] = "User updating is not available"
 
