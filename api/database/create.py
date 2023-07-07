@@ -11,6 +11,7 @@ cursor.execute('''
         username VARCHAR(50),
         password VARCHAR(50),
         role VARCHAR(50),
+        chatid INT,
         owner VARCHAR(50)
     )
 ''')
