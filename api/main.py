@@ -161,7 +161,7 @@ def update_god(username):
     connection.commit()
     connection.close()
 
-    response['message'] = "User updating is not available"
+    response['message'] = "User updated"
 
     return jsonify(response), 404
 
@@ -325,7 +325,7 @@ def update_admin(username):
     connection.commit()
     connection.close()
 
-    response['message'] = "User updating is not available"
+    response['message'] = "User updated"
 
     return jsonify(response), 404
 
@@ -491,7 +491,7 @@ def update_client(username):
     connection.commit()
     connection.close()
 
-    response['message'] = "User updating is not available"
+    response['message'] = "User updated"
 
     return jsonify(response), 404
 
