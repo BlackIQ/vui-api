@@ -111,8 +111,6 @@ def all_gods():
     users = []
 
     for record in execution:
-        print(record)
-
         user = {
             "id": record[0],
             "username": record[1],
