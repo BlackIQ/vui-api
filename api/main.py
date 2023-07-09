@@ -16,9 +16,9 @@ from api.config.config import path
 from api.database.sqlite import database
 
 # Functions
+from api.functions.notify import notify_admin
 from api.functions.execute import execute
 from api.functions.exists import exists
-from api.functions.message import send
 
 # Initate flask
 app = Flask(__name__)
@@ -58,7 +58,7 @@ def login_god():
         messages = ["New login", "\n", "Role: God", f"Username: {username}"]
         message = "\n".join(messages)
 
-        send(message, 6079800600)
+        notify_admin(message)
 
         response['message'] = "Welcome"
         response['user'] = user
@@ -99,7 +99,7 @@ def register_god():
     messages = ["New user", "\n", "Role: God", f"Username: {username}"]
     message = "\n".join(messages)
 
-    send(message, 6079800600)
+    notify_admin(message)
 
     response['message'] = "God created"
 
@@ -193,7 +193,7 @@ def delete_god(username):
                 "Role: God", f"Username: {username}"]
     message = "\n".join(messages)
 
-    send(message, 6079800600)
+    notify_admin(message)
 
     response['message'] = "User deleted"
 
@@ -232,7 +232,7 @@ def login_admin():
         messages = ["New login", "\n", "Role: Admin", f"Username: {username}"]
         message = "\n".join(messages)
 
-        send(message, 6079800600)
+        notify_admin(message)
 
         response['message'] = "Welcome"
         response['user'] = user
@@ -272,7 +272,7 @@ def register_admin():
     messages = ["New user", "\n", "Role: Admin", f"Username: {username}"]
     message = "\n".join(messages)
 
-    send(message, 6079800600)
+    notify_admin(message)
 
     response['message'] = "Admin created"
 
@@ -365,7 +365,7 @@ def delete_admin(username):
                 "Role: Admin", f"Username: {username}"]
     message = "\n".join(messages)
 
-    send(message, 6079800600)
+    notify_admin(message)
 
     response['message'] = "User deleted"
 
@@ -471,7 +471,7 @@ def create_client():
                     f"Username: {username}", f"Creator: {owner}"]
         message = "\n".join(messages)
 
-        send(message, 6079800600)
+        notify_admin(message)
 
         response['message'] = "Client created"
 
@@ -542,7 +542,7 @@ def delete_client(username):
                     "Role: Client", f"Username: {username}"]
         message = "\n".join(messages)
 
-        send(message, 6079800600)
+        notify_admin(message)
 
         response['message'] = "User deleted"
 
