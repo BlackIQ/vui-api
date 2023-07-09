@@ -575,7 +575,7 @@ def read():
             "username": record[1],
             "password": record[2],
             "role": record[3],
-            "x": record[4],
+            "chatid": record[4],
             "owner": record[5],
             "name": record[6],
         }
