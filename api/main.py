@@ -17,6 +17,7 @@ from api.database.sqlite import database
 
 # Functions
 from api.functions.execute import execute
+from api.functions.exists import exists
 from api.functions.message import send
 
 # Initate flask
@@ -81,6 +82,13 @@ def register_god():
     password = request.json['password']
     chatid = request.json['chatid']
     name = request.json['name']
+
+    count = exists(username)
+
+    if count != 0:
+        response['message'] = 'Username already exists'
+
+        return jsonify(response), 400
 
     cursor.execute(
         'INSERT INTO USERS (username, password, role, chatid, name) VALUES (?, ?, ?, ?, ?)', (username, password, "god", chatid, name,))
@@ -247,6 +255,13 @@ def register_admin():
     username = request.json['username']
     password = request.json['password']
     name = request.json['name']
+
+    count = exists(username)
+
+    if count != 0:
+        response['message'] = 'Username already exists'
+
+        return jsonify(response), 400
 
     cursor.execute(
         'INSERT INTO USERS (username, password, role, name) VALUES (?, ?, ?, ?)', (username, password, "admin", name,))
@@ -435,6 +450,13 @@ def create_client():
     owner = request.json['owner']
     name = request.json['name']
 
+    count = exists(username)
+
+    if count != 0:
+        response['message'] = 'Username already exists'
+
+        return jsonify(response), 400
+    
     script_path = os.path.join(path, 'scripts/create.sh')
     execution = execute(script_path, username, password)
 
