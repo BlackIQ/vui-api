@@ -26,7 +26,7 @@ app = Flask(__name__)
 CORS(app)
 
 
-# ---------- Admins ----------
+# ---------- Gods ----------
 
 # Login God
 @app.route('/api/auth/login', methods=['POST'])
@@ -50,7 +50,7 @@ def login_god():
             "id": result[0][0],
             "username": result[0][1],
             "password": result[0][2],
-            "role": result[0][3]
+            "role": result[0][3],
         }
 
         messages = ["New login", "\n", "Role: God", f"Username: {username}"]
@@ -79,9 +79,10 @@ def register_god():
     username = request.json['username']
     password = request.json['password']
     chatid = request.json['chatid']
+    name = request.json['name']
 
     cursor.execute(
-        'INSERT INTO USERS (username, password, role, chatid) VALUES (?, ?, ?, ?)', (username, password, "god", chatid,))
+        'INSERT INTO USERS (username, password, role, chatid, name) VALUES (?, ?, ?, ?, ?)', (username, password, "god", chatid, name,))
 
     connection.commit()
     connection.close()
@@ -96,7 +97,7 @@ def register_god():
     return jsonify(response), 200
 
 
-# All Admins
+# All Gods
 @app.route('/api/gods', methods=['GET'])
 @apiKey
 def all_gods():
@@ -110,18 +111,84 @@ def all_gods():
     users = []
 
     for record in execution:
+        print(record)
+
         user = {
             "id": record[0],
             "username": record[1],
             "password": record[2],
             "role": record[3],
             "chatid": record[4],
+            "name": record[6],
         }
         users.append(user)
 
     connection.close()
 
     response['data'] = users
+
+    return jsonify(response), 200
+
+
+# Update Client
+@app.route('/api/gods/<username>', methods=['PATCH'])
+@apiKey
+def update_god(username):
+    response = {}
+
+    body = request.json
+
+    username = username.split('/')[-1]
+
+    q = "UPDATE USERS SET "
+    r = []
+
+    for index, item in enumerate(body):
+        if (len(body) == index + 1):
+            q += f"{item} = ? "
+            r.append(body[item])
+        else:
+            q += f"{item} = ?, "
+            r.append(body[item])
+
+    q += "WHERE username = ?"
+    r.append(username)
+
+    cursor, connection = database()
+
+    cursor.execute(q, tuple(r))
+
+    connection.commit()
+    connection.close()
+
+    response['message'] = "User updating is not available"
+
+    return jsonify(response), 404
+
+
+# Delete Client
+@app.route('/api/gods/<username>', methods=['DELETE'])
+@apiKey
+def delete_god(username):
+    response = {}
+
+    username = username.split('/')[-1]
+
+    cursor, connection = database()
+
+    cursor.execute(
+        'DELETE FROM USERS WHERE username = ?', (username,))
+
+    connection.commit()
+    connection.close()
+
+    messages = ["Delete user", "\n",
+                "Role: God", f"Username: {username}"]
+    message = "\n".join(messages)
+
+    send(message, 6079800600)
+
+    response['message'] = "User deleted"
 
     return jsonify(response), 200
 
@@ -179,9 +246,10 @@ def register_admin():
 
     username = request.json['username']
     password = request.json['password']
+    name = request.json['name']
 
     cursor.execute(
-        'INSERT INTO USERS (username, password, role) VALUES (?, ?, ?)', (username, password, "admin",))
+        'INSERT INTO USERS (username, password, role, name) VALUES (?, ?, ?, ?)', (username, password, "admin", name,))
 
     connection.commit()
     connection.close()
@@ -199,7 +267,7 @@ def register_admin():
 # All Admins
 @app.route('/api/admins', methods=['GET'])
 @apiKey
-def add_admins():
+def all_admins():
     response = {}
 
     cursor, connection = database()
@@ -214,7 +282,8 @@ def add_admins():
             "id": record[0],
             "username": record[1],
             "password": record[2],
-            "role": record[3]
+            "role": record[3],
+            "name": record[6],
         }
         users.append(user)
 
@@ -223,6 +292,42 @@ def add_admins():
     response['data'] = users
 
     return jsonify(response), 200
+
+
+# Update Client
+@app.route('/api/admins/<username>', methods=['PATCH'])
+@apiKey
+def update_admin(username):
+    response = {}
+
+    body = request.json
+
+    username = username.split('/')[-1]
+
+    q = "UPDATE USERS SET "
+    r = []
+
+    for index, item in enumerate(body):
+        if (len(body) == index + 1):
+            q += f"{item} = ? "
+            r.append(body[item])
+        else:
+            q += f"{item} = ?, "
+            r.append(body[item])
+
+    q += "WHERE username = ?"
+    r.append(username)
+
+    cursor, connection = database()
+
+    cursor.execute(q, tuple(r))
+
+    connection.commit()
+    connection.close()
+
+    response['message'] = "User updating is not available"
+
+    return jsonify(response), 404
 
 
 # Delete Client
@@ -275,6 +380,7 @@ def all_users():
             "password": record[2],
             "role": record[3],
             "owner": record[5],
+            "name": record[6],
         }
         users.append(user)
 
@@ -304,7 +410,8 @@ def all_for_owner(owner):
             "id": record[0],
             "username": record[1],
             "password": record[2],
-            "role": record[3]
+            "role": record[3],
+            "name": record[6],
         }
         users.append(user)
 
@@ -326,13 +433,14 @@ def create_client():
     username = request.json['username']
     password = request.json['password']
     owner = request.json['owner']
+    name = request.json['name']
 
     script_path = os.path.join(path, 'scripts/create.sh')
     execution = execute(script_path, username, password)
 
     if execution:
         cursor.execute(
-            'INSERT INTO USERS (username, password, role, owner) VALUES (?, ?, ?, ?)', (username, password, "client", owner,))
+            'INSERT INTO USERS (username, password, role, owner, name) VALUES (?, ?, ?, ?, ?)', (username, password, "client", owner, name,))
 
         connection.commit()
         connection.close()
@@ -358,7 +466,30 @@ def create_client():
 def update_client(username):
     response = {}
 
+    body = request.json
+
     username = username.split('/')[-1]
+
+    q = "UPDATE USERS SET "
+    r = []
+
+    for index, item in enumerate(body):
+        if (len(body) == index + 1):
+            q += f"{item} = ? "
+            r.append(body[item])
+        else:
+            q += f"{item} = ?, "
+            r.append(body[item])
+
+    q += "WHERE username = ?"
+    r.append(username)
+
+    cursor, connection = database()
+
+    cursor.execute(q, tuple(r))
+
+    connection.commit()
+    connection.close()
 
     response['message'] = "User updating is not available"
 
