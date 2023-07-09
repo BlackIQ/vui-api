@@ -551,3 +551,91 @@ def delete_client(username):
         response['message'] = 'Sorry, an error!'
 
         return jsonify(response), 500
+
+
+# ---------- By ID ----------
+
+
+# Read
+@app.route('/api/v', methods=['GET'])
+@apiKey
+def read():
+    response = {}
+
+    cursor, connection = database()
+
+    cursor.execute("SELECT * FROM USERS")
+    execution = cursor.fetchall()
+
+    users = []
+
+    for record in execution:
+        user = {
+            "id": record[0],
+            "username": record[1],
+            "password": record[2],
+            "role": record[3],
+            "x": record[4],
+            "owner": record[5],
+            "name": record[6],
+        }
+        users.append(user)
+
+    connection.close()
+
+    response['data'] = users
+
+    return jsonify(response), 200
+
+
+# Update Client
+@app.route('/api/v/<id>', methods=['PATCH'])
+@apiKey
+def update(id):
+    response = {}
+
+    body = request.json
+
+    q = "UPDATE USERS SET "
+    r = []
+
+    for index, item in enumerate(body):
+        if (len(body) == index + 1):
+            q += f"{item} = ? "
+            r.append(body[item])
+        else:
+            q += f"{item} = ?, "
+            r.append(body[item])
+
+    q += "WHERE id = ?"
+    r.append(id)
+
+    cursor, connection = database()
+
+    cursor.execute(q, tuple(r))
+
+    connection.commit()
+    connection.close()
+
+    response['message'] = "User updated"
+
+    return jsonify(response), 404
+
+
+# Delete
+@app.route('/api/v/<id>', methods=['DELETE'])
+@apiKey
+def delete(id):
+    response = {}
+
+    cursor, connection = database()
+
+    cursor.execute(
+        'DELETE FROM USERS WHERE id = ?', (id,))
+
+    connection.commit()
+    connection.close()
+
+    response['message'] = "User deleted"
+
+    return jsonify(response), 200
