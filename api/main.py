@@ -51,6 +51,7 @@ def login_god():
             "username": result[0][1],
             "password": result[0][2],
             "role": result[0][3],
+            "name": result[0][6],
         }
 
         messages = ["New login", "\n", "Role: God", f"Username: {username}"]
@@ -216,7 +217,8 @@ def login_admin():
             "id": result[0][0],
             "username": result[0][1],
             "password": result[0][2],
-            "role": result[0][3]
+            "role": result[0][3],
+            "name": result[0][6],
         }
 
         messages = ["New login", "\n", "Role: Admin", f"Username: {username}"]
