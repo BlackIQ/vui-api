@@ -55,8 +55,8 @@ def login_god():
             "name": result[0][6],
         }
 
-        messages = ["Action: Login 🚪",
-                    "Role: God 💪", f"Username: {username} 🙂"]
+        messages = ["Action: Login",
+                    "Role: God", f"Username: {username}"]
         message = "\n".join(messages)
 
         notify_admin(message)
@@ -97,7 +97,7 @@ def register_god():
     connection.commit()
     connection.close()
 
-    messages = ["Action: Create 🆕", "Role: God 💪", f"Username: {username} 🙂"]
+    messages = ["Action: Create", "Role: God", f"Username: {username}"]
     message = "\n".join(messages)
 
     notify_admin(message)
@@ -190,7 +190,7 @@ def delete_god(username):
     connection.commit()
     connection.close()
 
-    messages = ["Action: Delete 🗑", "Role: God 💪", f"Username: {username} 🙂"]
+    messages = ["Action: Delete", "Role: God", f"Username: {username}"]
     message = "\n".join(messages)
 
     notify_admin(message)
@@ -229,8 +229,8 @@ def login_admin():
             "name": result[0][6],
         }
 
-        messages = ["Action: Login 🚪",
-                    "Role: Admin 💵", f"Username: {username} 🙂"]
+        messages = ["Action: Login",
+                    "Role: Admin", f"Username: {username}"]
         message = "\n".join(messages)
 
         notify_admin(message)
@@ -274,8 +274,8 @@ def register_admin():
         connection.commit()
         connection.close()
 
-        messages = ["Action: Create 🆕",
-                    "Role: Admin 💵", f"Username: {username} 🙂"]
+        messages = ["Action: Create",
+                    "Role: Admin", f"Username: {username}"]
         message = "\n".join(messages)
 
         notify_admin(message)
@@ -371,7 +371,7 @@ def delete_admin(username):
     connection.commit()
     connection.close()
 
-    messages = ["Action: Delete 🗑", "Role: Admin 💵", f"Username: {username} 🙂"]
+    messages = ["Action: Delete", "Role: Admin", f"Username: {username}"]
     message = "\n".join(messages)
 
     notify_admin(message)
@@ -476,8 +476,8 @@ def create_client():
         connection.commit()
         connection.close()
 
-        messages = ["Action: Create 🆕", "Role: Client 👤",
-                    f"Username: {username} 🙂", f"Creator: {owner} 💵"]
+        messages = ["Action: Create", "Role: Client",
+                    f"Username: {username}", f"Creator: {owner}"]
         message = "\n".join(messages)
 
         notify_admin(message)
@@ -547,8 +547,8 @@ def delete_client(username):
         connection.commit()
         connection.close()
 
-        messages = ["Action: Delete 🗑",
-                    "Role: Client 👤", f"Username: {username} 🙂"]
+        messages = ["Action: Delete",
+                    "Role: Client", f"Username: {username}"]
         message = "\n".join(messages)
 
         notify_admin(message)
