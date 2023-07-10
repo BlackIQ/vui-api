@@ -19,6 +19,7 @@ from api.database.sqlite import database
 from api.functions.notify import notify_admin
 from api.functions.execute import execute
 from api.functions.exists import exists
+from api.functions.log import logger
 
 # Initate flask
 app = Flask(__name__)
@@ -58,6 +59,15 @@ def login_god():
         messages = ["Action: Login",
                     "Role: God", f"Username: {username}"]
         message = "\n".join(messages)
+
+        log_data = {
+            "action": "login",
+            "level": 1,
+            "role": "god",
+            "username": username,
+        }
+
+        logger(log_data)
 
         notify_admin(message)
 
@@ -99,6 +109,15 @@ def register_god():
 
     messages = ["Action: Create", "Role: God", f"Username: {username}"]
     message = "\n".join(messages)
+
+    log_data = {
+        "action": "create",
+        "level": 3,
+        "role": "god",
+        "username": username,
+    }
+
+    logger(log_data)
 
     notify_admin(message)
 
@@ -193,6 +212,15 @@ def delete_god(username):
     messages = ["Action: Delete", "Role: God", f"Username: {username}"]
     message = "\n".join(messages)
 
+    log_data = {
+        "action": "delete",
+        "level": 2,
+        "role": "god",
+        "username": username,
+    }
+
+    logger(log_data)
+
     notify_admin(message)
 
     response['message'] = "User deleted"
@@ -232,6 +260,15 @@ def login_admin():
         messages = ["Action: Login",
                     "Role: Admin", f"Username: {username}"]
         message = "\n".join(messages)
+
+        log_data = {
+            "action": "login",
+            "level": 1,
+            "role": "admin",
+            "username": username,
+        }
+
+        logger(log_data)
 
         notify_admin(message)
 
@@ -277,6 +314,15 @@ def register_admin():
         messages = ["Action: Create",
                     "Role: Admin", f"Username: {username}"]
         message = "\n".join(messages)
+
+        log_data = {
+            "action": "create",
+            "level": 3,
+            "role": "admin",
+            "username": username,
+        }
+
+        logger(log_data)
 
         notify_admin(message)
 
@@ -373,6 +419,15 @@ def delete_admin(username):
 
     messages = ["Action: Delete", "Role: Admin", f"Username: {username}"]
     message = "\n".join(messages)
+
+    log_data = {
+        "action": "delete",
+        "level": 2,
+        "role": "admin",
+        "username": username,
+    }
+
+    logger(log_data)
 
     notify_admin(message)
 
@@ -480,6 +535,16 @@ def create_client():
                     f"Username: {username}", f"Creator: {owner}"]
         message = "\n".join(messages)
 
+        log_data = {
+            "action": "create",
+            "level": 3,
+            "role": "client",
+            "creator": owner,
+            "username": username,
+        }
+
+        logger(log_data)
+
         notify_admin(message)
 
         response['message'] = "Client created"
@@ -550,6 +615,15 @@ def delete_client(username):
         messages = ["Action: Delete",
                     "Role: Client", f"Username: {username}"]
         message = "\n".join(messages)
+
+        log_data = {
+            "action": "delete",
+            "level": 2,
+            "role": "client",
+            "username": username,
+        }
+
+        logger(log_data)
 
         notify_admin(message)
 
