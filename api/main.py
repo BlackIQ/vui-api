@@ -722,3 +722,53 @@ def delete(id):
     response['message'] = "User deleted"
 
     return jsonify(response), 200
+
+
+# ---------- Logs ----------
+
+
+# All logs
+@app.route('/api/logs', methods=['GET'])
+@apiKey
+def logs():
+    response = {}
+
+    cursor, connection = database()
+
+    q = "SELECT * FROM LOGS"
+    r = []
+
+    logs = []
+
+    if len(request.args) > 0:
+        for index, item in enumerate(request.args.items()):
+            if index == 0:
+                q += " WHERE "
+
+            if (len(request.args) == index + 1):
+                q += f"{item[0]} = ? "
+                r.append(item[1])
+            else:
+                q += f"{item[0]} = ?, "
+                r.append(item[1])
+
+    cursor.execute(q, tuple(r))
+
+    result = cursor.fetchall()
+    connection.close()
+
+    for record in result:
+        log = {
+            "_id": record[0],
+            "username": record[1],
+            "action": record[2],
+            "role": record[3],
+            "level": record[4],
+            "creator":  record[5],
+        }
+
+        logs.append(log)
+
+    response['data'] = logs
+
+    return jsonify(response), 200
