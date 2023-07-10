@@ -263,20 +263,28 @@ def register_admin():
 
         return jsonify(response), 400
 
-    cursor.execute(
-        'INSERT INTO USERS (username, password, role, name) VALUES (?, ?, ?, ?)', (username, password, "admin", name,))
+    script_path = os.path.join(path, 'scripts/create.sh')
+    execution = execute(script_path, username, password)
 
-    connection.commit()
-    connection.close()
+    if execution:
+        cursor.execute(
+            'INSERT INTO USERS (username, password, role, name) VALUES (?, ?, ?, ?)', (username, password, "admin", name,))
 
-    messages = ["New user", "\n", "Role: Admin", f"Username: {username}"]
-    message = "\n".join(messages)
+        connection.commit()
+        connection.close()
 
-    notify_admin(message)
+        messages = ["New user", "\n", "Role: Admin", f"Username: {username}"]
+        message = "\n".join(messages)
 
-    response['message'] = "Admin created"
+        notify_admin(message)
 
-    return jsonify(response), 200
+        response['message'] = "Admin created"
+
+        return jsonify(response), 200
+    else:
+        response['message'] = 'Sorry, an error!'
+
+        return jsonify(response), 500
 
 
 # All Admins
@@ -456,7 +464,7 @@ def create_client():
         response['message'] = 'Username already exists'
 
         return jsonify(response), 400
-    
+
     script_path = os.path.join(path, 'scripts/create.sh')
     execution = execute(script_path, username, password)
 
@@ -479,7 +487,7 @@ def create_client():
     else:
         response['message'] = 'Sorry, an error!'
 
-    return jsonify(response), 500
+        return jsonify(response), 500
 
 
 # Update Client
