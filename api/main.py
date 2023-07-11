@@ -772,3 +772,21 @@ def logs():
     response['data'] = logs
 
     return jsonify(response), 200
+
+
+# ---------- Migration ----------
+
+@app.route('/api/migration', methods=['GET'])
+@apiKey
+def migration():
+    response = {}
+
+    cursor, connection = database()
+
+    cursor.execute("SELECT * FROM USERS WHERE role IS NOT 'god'")
+    
+    response['data'] = [{'username': i[1], 'password': i[2]} for i in cursor.fetchall()]
+
+    connection.close()
+
+    return jsonify(response), 200
