@@ -784,8 +784,19 @@ def migration():
     cursor, connection = database()
 
     cursor.execute("SELECT * FROM USERS WHERE role IS NOT 'god'")
-    
-    response['data'] = [{'username': i[1], 'password': i[2]} for i in cursor.fetchall()]
+
+    users = [{'username': i[1], 'password': i[2]} for i in cursor.fetchall()]
+
+    for user in users:
+        script_path = os.path.join(path, 'scripts/create.sh')
+        execution = execute(script_path, user['username'], user['password'])
+
+        if execution:
+            user['executed'] = True
+        else:
+            user['executed'] = False
+
+    response['data'] = users
 
     connection.close()
 
