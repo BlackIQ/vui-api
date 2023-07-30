@@ -870,6 +870,8 @@ def expired():
         'SELECT * FROM USERS WHERE role = "client" AND timestamp <= ?', (days_ago,))
     results = cursor.fetchall()
 
+    connection.close()
+
     users = []
     messages = ["Action: Delete expireds", "Role: System", "Deleted users:"]
 
@@ -883,25 +885,31 @@ def expired():
             "name": record[6],
             "timestamp": record[7],
         }
-        users.append(user)
-        messages.append(f'{record[1]} by {record[5]}')
 
-    connection.close()
+        # script_path = os.path.join(path, 'scripts/delete.sh')
+        # execution = execute(script_path, user['username'])
+
+        execution = True
+
+        if execution:
+            cursor.execute(
+                'DELETE FROM USERS WHERE username = ?', (record[1],))
+
+            connection.commit()
+            connection.close()
+
+            messages.append(f'{record[1]} by {record[5]} ✅')
+            user['executed'] = True
+        else:
+            messages.append(f'{record[1]} by {record[5]} ❌')
+            user['executed'] = False
+
+        users.append(user)
 
     message = "\n".join(messages)
-
-    # log_data = {
-    #     "action": "login",
-    #     "level": 1,
-    #     "role": "god",
-    #     "username": username,
-    # }
-
-    # logger(log_data)
 
     notify_admin(message)
 
     response['data'] = users
-    response['test'] = messages
 
     return jsonify(response), 200
