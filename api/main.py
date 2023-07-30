@@ -105,7 +105,7 @@ def register_god():
     timestamp = datetime.datetime.now()
 
     cursor.execute(
-        'INSERT INTO USERS (username, password, role, chatid, name, timestamp) VALUES (?, ?, ?, ?, ?, timestamp)', (username, password, "god", chatid, name, timestamp,))
+        'INSERT INTO USERS (username, password, role, chatid, name, owner, timestamp) VALUES (?, ?, ?, ?, ?, timestamp)', (username, password, "god", chatid, name, "god", timestamp,))
 
     connection.commit()
     connection.close()
