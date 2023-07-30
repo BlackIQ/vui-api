@@ -884,6 +884,21 @@ def expired():
 
     connection.close()
 
+    messages = ["Action: Delete expireds", "Role: System", f'{u["username"]} by {u["creator"]}' for u in users]
+    message = "\n".join(messages)
+
+    # log_data = {
+    #     "action": "login",
+    #     "level": 1,
+    #     "role": "god",
+    #     "username": username,
+    # }
+
+    # logger(log_data)
+
+    notify_admin(message)
+
     response['data'] = users
+    response['test'] = messages
 
     return jsonify(response), 200
