@@ -876,6 +876,8 @@ def expired():
     messages = ["Action: Delete expireds", "Role: System", "Deleted users:"]
 
     for record in results:
+        cursor_l, connection_l = database()
+
         user = {
             "id": record[0],
             "username": record[1],
@@ -892,11 +894,11 @@ def expired():
         execution = True
 
         if execution:
-            cursor.execute(
+            cursor_l.execute(
                 'DELETE FROM USERS WHERE username = ?', (record[1],))
 
-            connection.commit()
-            connection.close()
+            connection_l.commit()
+            connection_l.close()
 
             messages.append(f'{record[1]} by {record[5]} ✅')
             user['executed'] = True
