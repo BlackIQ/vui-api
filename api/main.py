@@ -3,8 +3,11 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 # Python libs
+import datetime
 import os
 
+# Database
+from api.database.sqlite import database
 
 # Middlewares
 from api.middlewares.apikey import apiKey
@@ -12,14 +15,12 @@ from api.middlewares.apikey import apiKey
 # Config
 from api.config.config import path
 
-# Database
-from api.database.sqlite import database
-
 # Functions
 from api.functions.notify import notify_admin
 from api.functions.execute import execute
 from api.functions.exists import exists
 from api.functions.log import logger
+
 
 # Initate flask
 app = Flask(__name__)
@@ -101,8 +102,10 @@ def register_god():
 
         return jsonify(response), 400
 
+    timestamp = datetime.datetime.now()
+
     cursor.execute(
-        'INSERT INTO USERS (username, password, role, chatid, name) VALUES (?, ?, ?, ?, ?)', (username, password, "god", chatid, name,))
+        'INSERT INTO USERS (username, password, role, chatid, name, timestamp) VALUES (?, ?, ?, ?, ?, timestamp)', (username, password, "god", chatid, name, timestamp,))
 
     connection.commit()
     connection.close()
@@ -304,9 +307,11 @@ def register_admin():
     script_path = os.path.join(path, 'scripts/create.sh')
     execution = execute(script_path, username, password)
 
+    timestamp = datetime.datetime.now()
+
     if execution:
         cursor.execute(
-            'INSERT INTO USERS (username, password, role, name) VALUES (?, ?, ?, ?)', (username, password, "admin", name,))
+            'INSERT INTO USERS (username, password, role, name, timestamp) VALUES (?, ?, ?, ?, ?)', (username, password, "admin", name, timestamp,))
 
         connection.commit()
         connection.close()
@@ -524,9 +529,11 @@ def create_client():
     script_path = os.path.join(path, 'scripts/create.sh')
     execution = execute(script_path, username, password)
 
+    timestamp = datetime.datetime.now()
+
     if execution:
         cursor.execute(
-            'INSERT INTO USERS (username, password, role, owner, name) VALUES (?, ?, ?, ?, ?)', (username, password, "client", owner, name,))
+            'INSERT INTO USERS (username, password, role, owner, name, timestamp) VALUES (?, ?, ?, ?, ?, ?)', (username, password, "client", owner, name, timestamp,))
 
         connection.commit()
         connection.close()
@@ -776,6 +783,7 @@ def logs():
 
 # ---------- Migration ----------
 
+# Migrate from db to kernel
 @app.route('/api/migration', methods=['GET'])
 @apiKey
 def migration():
@@ -799,5 +807,40 @@ def migration():
     response['data'] = users
 
     connection.close()
+
+    return jsonify(response), 200
+
+
+# ---------- Expire ----------
+
+# Delete expired
+@app.route('/api/expired', methods=['get'])
+@apiKey
+def expired():
+    response = {}
+
+    cursor, connection = database()
+
+    days_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+
+    cursor.execute(
+        'SELECT * FROM USERS WHERE role = "client" AND timestamp <= ?', (days_ago,))
+    results = cursor.fetchall()
+
+    users = []
+
+    for record in results:
+        user = {
+            "id": record[0],
+            "username": record[1],
+            "password": record[2],
+            "role": record[3],
+            "name": record[6],
+        }
+        users.append(user)
+
+    connection.close()
+
+    response['data'] = users
 
     return jsonify(response), 200
