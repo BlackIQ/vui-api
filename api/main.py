@@ -683,6 +683,43 @@ def read():
     return jsonify(response), 200
 
 
+# Create
+@app.route('/api/v', methods=['POST'])
+@apiKey
+def create():
+    response = {}
+
+    body = request.json
+
+    days_ago = datetime.datetime.now() - datetime.timedelta(days=31)
+
+    q = "INSERT INTO USERS ("
+    columns = []
+    placeholders = []
+    r = []
+
+    for item in body:
+        columns.append(item)
+        placeholders.append('?')
+        r.append(body[item])
+
+    columns.append("timestamp")
+    placeholders.append(days_ago)
+
+    q += ', '.join(columns) + ") VALUES (" + ', '.join(placeholders) + ")"
+
+    cursor, connection = database()
+
+    cursor.execute(q, tuple(r))
+
+    connection.commit()
+    connection.close()
+
+    response['message'] = "User created"
+
+    return jsonify(response), 201
+
+
 # Update User
 @app.route('/api/v/<id>', methods=['PATCH'])
 @apiKey
