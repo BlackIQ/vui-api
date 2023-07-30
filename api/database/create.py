@@ -12,7 +12,8 @@ cursor.execute('''
         password VARCHAR(50),
         role VARCHAR(50),
         chatid INT,
-        owner VARCHAR(50)
+        owner VARCHAR(50),
+        timestamp DATETIME
     )
 ''')
 

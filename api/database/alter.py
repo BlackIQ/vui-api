@@ -6,7 +6,7 @@ cursor = conn.cursor()
 
 # Create the users table
 cursor.execute('''
-    ALTER TABLE USERS ADD COLUMN name VARCHAR(50)
+    ALTER TABLE USERS ADD COLUMN timestamp DATETIME
 ''')
 
 # Commit the changes and close the connection
