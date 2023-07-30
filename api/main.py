@@ -888,10 +888,8 @@ def expired():
             "timestamp": record[7],
         }
 
-        # script_path = os.path.join(path, 'scripts/delete.sh')
-        # execution = execute(script_path, record[1])
-
-        execution = False
+        script_path = os.path.join(path, 'scripts/delete.sh')
+        execution = execute(script_path, record[1])
 
         if execution:
             cursor_l.execute(
