@@ -11,7 +11,8 @@ username="$1"
 password="$2"
 
 # Create the user
-useradd -r -s /bin/false "$username"
+# useradd -r -s /bin/false "$username"
+useradd "$username"
 
 # Set the password for the user
 echo "$username:$password" | chpasswd
