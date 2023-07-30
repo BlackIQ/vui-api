@@ -879,11 +879,12 @@ def expired():
             "username": record[1],
             "password": record[2],
             "role": record[3],
+            "owner": record[5],
             "name": record[6],
             "timestamp": record[7],
         }
         users.append(user)
-        messages.append(f'{user["username"]} by {user["owner"]}')
+        messages.append(f'{record[1]} by {record[5]}')
 
     connection.close()
 
