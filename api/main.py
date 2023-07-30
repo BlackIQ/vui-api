@@ -889,9 +889,9 @@ def expired():
         }
 
         # script_path = os.path.join(path, 'scripts/delete.sh')
-        # execution = execute(script_path, user['username'])
+        # execution = execute(script_path, record[1])
 
-        execution = True
+        execution = False
 
         if execution:
             cursor_l.execute(
