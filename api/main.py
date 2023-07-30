@@ -819,7 +819,7 @@ def migration():
 # ---------- Expire ----------
 
 # Delete expired
-@app.route('/api/expired', methods=['get'])
+@app.route('/api/expired', methods=['GET'])
 @apiKey
 def expired():
     response = {}
