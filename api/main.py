@@ -150,6 +150,7 @@ def all_gods():
             "role": record[3],
             "chatid": record[4],
             "name": record[6],
+            "timestamp": record[7],
         }
         users.append(user)
 
@@ -360,6 +361,7 @@ def all_admins():
             "password": record[2],
             "role": record[3],
             "name": record[6],
+            "timestamp": record[7],
         }
         users.append(user)
 
@@ -465,6 +467,7 @@ def all_users():
             "role": record[3],
             "owner": record[5],
             "name": record[6],
+            "timestamp": record[7],
         }
         users.append(user)
 
@@ -496,6 +499,7 @@ def all_for_owner(owner):
             "password": record[2],
             "role": record[3],
             "name": record[6],
+            "timestamp": record[7],
         }
         users.append(user)
 
@@ -668,6 +672,7 @@ def read():
             "chatid": record[4],
             "owner": record[5],
             "name": record[6],
+            "timestamp": record[7],
         }
         users.append(user)
 
@@ -836,6 +841,7 @@ def expired():
             "password": record[2],
             "role": record[3],
             "name": record[6],
+            "timestamp": record[7],
         }
         users.append(user)
 
