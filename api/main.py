@@ -704,7 +704,8 @@ def create():
         r.append(body[item])
 
     columns.append("timestamp")
-    placeholders.append(days_ago)
+    placeholders.append('?')
+    r.append(days_ago)
 
     q += ', '.join(columns) + ") VALUES (" + ', '.join(placeholders) + ")"
 
