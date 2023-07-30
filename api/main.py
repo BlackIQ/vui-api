@@ -297,6 +297,7 @@ def register_admin():
     username = request.json['username']
     password = request.json['password']
     name = request.json['name']
+    owner = request.json['owner']
 
     count = exists(username)
 
@@ -312,7 +313,7 @@ def register_admin():
 
     if execution:
         cursor.execute(
-            'INSERT INTO USERS (username, password, role, name, timestamp) VALUES (?, ?, ?, ?, ?)', (username, password, "admin", name, timestamp,))
+            'INSERT INTO USERS (username, password, role, name, owner, timestamp) VALUES (?, ?, ?, ?, ?)', (username, password, "admin", name, owner, timestamp,))
 
         connection.commit()
         connection.close()
