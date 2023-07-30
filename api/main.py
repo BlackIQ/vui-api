@@ -157,7 +157,7 @@ def all_gods():
     return jsonify(response), 200
 
 
-# Update Client
+# Update God
 @app.route('/api/gods/<username>', methods=['PATCH'])
 @apiKey
 def update_god(username):
@@ -193,7 +193,7 @@ def update_god(username):
     return jsonify(response), 404
 
 
-# Delete Client
+# Delete God
 @app.route('/api/gods/<username>', methods=['DELETE'])
 @apiKey
 def delete_god(username):
@@ -365,7 +365,7 @@ def all_admins():
     return jsonify(response), 200
 
 
-# Update Client
+# Update Admin
 @app.route('/api/admins/<username>', methods=['PATCH'])
 @apiKey
 def update_admin(username):
@@ -401,7 +401,7 @@ def update_admin(username):
     return jsonify(response), 404
 
 
-# Delete Client
+# Delete Admin
 @app.route('/api/admins/<username>', methods=['DELETE'])
 @apiKey
 def delete_admin(username):
@@ -439,7 +439,7 @@ def delete_admin(username):
 # ---------- Clients ----------
 
 
-# All Clients Filter For Owner
+# All Clients
 @app.route('/api/clients', methods=['GET'])
 @apiKey
 def all_users():
@@ -636,10 +636,10 @@ def delete_client(username):
         return jsonify(response), 500
 
 
-# ---------- By ID ----------
+# ---------- Users ----------
 
 
-# Read
+# Add Users
 @app.route('/api/v', methods=['GET'])
 @apiKey
 def read():
@@ -671,7 +671,7 @@ def read():
     return jsonify(response), 200
 
 
-# Update Client
+# Update User
 @app.route('/api/v/<id>', methods=['PATCH'])
 @apiKey
 def update(id):
@@ -705,7 +705,7 @@ def update(id):
     return jsonify(response), 404
 
 
-# Delete
+# Delete User
 @app.route('/api/v/<id>', methods=['DELETE'])
 @apiKey
 def delete(id):
