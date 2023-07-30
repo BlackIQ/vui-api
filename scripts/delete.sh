@@ -10,4 +10,5 @@ fi
 username="$1"
 
 # Delete the user
-userdel -r "$username"
+userdel "$username"
+# userdel -r "$username"
