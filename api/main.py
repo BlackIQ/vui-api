@@ -870,7 +870,7 @@ def expired():
     results = cursor.fetchall()
 
     users = []
-    messages = ["Action: Delete expireds", "Role: System"]
+    messages = ["Action: Delete expireds", "Role: System", "Deleted users:"]
 
     for record in results:
         user = {
@@ -882,7 +882,7 @@ def expired():
             "timestamp": record[7],
         }
         users.append(user)
-        messages.append(f'{u["username"]} by {u["creator"]}')
+        messages.append(f'{user["username"]} by {user["creator"]}')
 
     connection.close()
 
