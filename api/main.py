@@ -469,6 +469,7 @@ def all_users():
             "owner": record[5],
             "name": record[6],
             "timestamp": record[7],
+            "expire": record[8],
         }
         users.append(user)
 
@@ -501,6 +502,7 @@ def all_for_owner(owner):
             "role": record[3],
             "name": record[6],
             "timestamp": record[7],
+            "expire": record[8],
         }
         users.append(user)
 
@@ -523,6 +525,7 @@ def create_client():
     password = request.json['password']
     owner = request.json['owner']
     name = request.json['name']
+    expire = request.json['expire']
 
     count = exists(username)
 
@@ -535,10 +538,11 @@ def create_client():
     execution = execute(script_path, username, password)
 
     timestamp = datetime.datetime.now()
+    expire = timestamp + datetime.timedelta(days=expire)
 
     if execution:
         cursor.execute(
-            'INSERT INTO USERS (username, password, role, owner, name, timestamp) VALUES (?, ?, ?, ?, ?, ?)', (username, password, "client", owner, name, timestamp,))
+            'INSERT INTO USERS (username, password, role, owner, name, timestamp, expire) VALUES (?, ?, ?, ?, ?, ?, ?)', (username, password, "client", owner, name, timestamp, expire,))
 
         connection.commit()
         connection.close()
@@ -674,6 +678,7 @@ def read():
             "owner": record[5],
             "name": record[6],
             "timestamp": record[7],
+            "expire": record[8],
         }
         users.append(user)
 
@@ -887,6 +892,7 @@ def expired():
             "owner": record[5],
             "name": record[6],
             "timestamp": record[7],
+            "expire": record[8],
         }
 
         script_path = os.path.join(path, 'scripts/delete.sh')
