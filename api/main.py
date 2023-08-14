@@ -538,7 +538,7 @@ def create_client():
     execution = execute(script_path, username, password)
 
     timestamp = datetime.datetime.now()
-    expire = timestamp + datetime.timedelta(days=expire)
+    expire = timestamp + datetime.timedelta(days=int(expire))
 
     if execution:
         cursor.execute(
@@ -870,10 +870,10 @@ def expired():
 
     cursor, connection = database()
 
-    days_ago = datetime.datetime.now() - datetime.timedelta(days=30)
+    current = datetime.datetime.now()
 
     cursor.execute(
-        'SELECT * FROM USERS WHERE role = "client" AND timestamp <= ?', (days_ago,))
+        'SELECT * FROM USERS WHERE role = "client" AND expire <= ?', (current,))
     results = cursor.fetchall()
 
     connection.close()
