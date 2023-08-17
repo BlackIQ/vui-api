@@ -609,7 +609,7 @@ def update_client(username):
 
     response['message'] = "User updated"
 
-    return jsonify(response), 404
+    return jsonify(response), 200
 
 
 # Delete Client
