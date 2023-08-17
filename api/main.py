@@ -612,6 +612,28 @@ def update_client(username):
     return jsonify(response), 200
 
 
+# Update Client Access
+@app.route('/api/clients/access/<username>', methods=['PATCH'])
+@apiKey
+def update_client_access(username):
+    response = {}
+
+    access = request.json["access"]
+
+    username = username.split('/')[-1]
+
+    cursor, connection = database()
+
+    cursor.execute("UPDATE USERS SET access = ? WHERE username = ?", tuple(access, username,))
+
+    connection.commit()
+    connection.close()
+
+    response['message'] = "User access updated"
+
+    return jsonify(response), 200
+
+
 # Delete Client
 @app.route('/api/clients/<username>', methods=['DELETE'])
 @apiKey
