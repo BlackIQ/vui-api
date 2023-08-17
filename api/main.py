@@ -687,7 +687,7 @@ def update_client_days(username):
 
     connection.close()
 
-    timestamp = datetime.datetime(users[0]['timestamp'])
+    timestamp = datetime.datetime.strptime(users[0]['timestamp'], "%Y-%m-%d %H:%M:%S.%f")
     expire = timestamp + datetime.timedelta(days=int(days))
 
     cursor2, connection2 = database()
