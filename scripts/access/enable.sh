@@ -8,4 +8,4 @@ fi
 username=$1
 
 # Enable SSH access for the user
-sudo usermod -s /bin/bash $username
+sudo usermod -s /bin/false $username
