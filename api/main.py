@@ -622,16 +622,31 @@ def update_client_access(username):
 
     username = username.split('/')[-1]
 
-    cursor, connection = database()
+    file = ""
 
-    cursor.execute("UPDATE USERS SET access = ? WHERE username = ?", (access, username,))
+    if (access):
+        file = "enable"
+    else:
+        file = "disable"
 
-    connection.commit()
-    connection.close()
+    script_path = os.path.join(path, f'scripts/access/{file}.sh')
+    execution = execute(script_path, username)
 
-    response['message'] = "User access updated"
+    if execution:
+        cursor, connection = database()
 
-    return jsonify(response), 200
+        cursor.execute("UPDATE USERS SET access = ? WHERE username = ?", (access, username,))
+
+        connection.commit()
+        connection.close()
+
+        response['message'] = "User access updated"
+
+        return jsonify(response), 200
+    else:
+        response['message'] = 'Sorry, an error!'
+
+        return jsonify(response), 500
 
 
 # Delete Client
