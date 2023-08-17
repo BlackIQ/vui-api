@@ -640,6 +640,12 @@ def update_client_access(username):
         connection.commit()
         connection.close()
 
+        messages = ["Action: Access control", "Role: Admin", f"Username: {username}", f"Access: {access}"]
+
+        message = "\n".join(messages)
+
+        notify_admin(message)
+
         response['message'] = "User access updated"
 
         return jsonify(response), 200
