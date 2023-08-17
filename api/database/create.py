@@ -13,7 +13,9 @@ cursor.execute('''
         role VARCHAR(50),
         chatid INT,
         owner VARCHAR(50),
-        timestamp DATETIME
+        timestamp DATETIME,
+        expire DATETIME,
+        access BOOLEAN,
     )
 ''')
 

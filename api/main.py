@@ -470,6 +470,7 @@ def all_users():
             "name": record[6],
             "timestamp": record[7],
             "expire": record[8],
+            "access": record[9]
         }
         users.append(user)
 
@@ -503,6 +504,7 @@ def all_for_owner(owner):
             "name": record[6],
             "timestamp": record[7],
             "expire": record[8],
+            "access": record[9]
         }
         users.append(user)
 
@@ -542,7 +544,9 @@ def create_client():
 
     if execution:
         cursor.execute(
-            'INSERT INTO USERS (username, password, role, owner, name, timestamp, expire) VALUES (?, ?, ?, ?, ?, ?, ?)', (username, password, "client", owner, name, timestamp, expire,))
+            'INSERT INTO USERS (username, password, role, owner, name, timestamp, expire, access) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            (username, password, "client", owner, name, timestamp, expire, True)
+        )
 
         connection.commit()
         connection.close()
@@ -679,6 +683,7 @@ def read():
             "name": record[6],
             "timestamp": record[7],
             "expire": record[8],
+            "access": record[9],
         }
         users.append(user)
 
@@ -893,6 +898,7 @@ def expired():
             "name": record[6],
             "timestamp": record[7],
             "expire": record[8],
+            "access": record[9]
         }
 
         script_path = os.path.join(path, 'scripts/delete.sh')
