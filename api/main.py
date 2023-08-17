@@ -664,15 +664,38 @@ def update_client_days(username):
 
     username = username.split('/')[-1]
 
-    timestamp = datetime.datetime.now()
-    expire = timestamp + datetime.timedelta(days=int(days))
-
     cursor, connection = database()
 
-    cursor.execute("UPDATE USERS SET expire = ? WHERE username = ?", (expire, username,))
+    cursor.execute("SELECT * FROM USERS WHERE username = ?", (username,))
 
-    connection.commit()
+    users = []
+
+    for record in cursor.fetchall():
+        user = {
+            "id": record[0],
+            "username": record[1],
+            "password": record[2],
+            "role": record[3],
+            "owner": record[5],
+            "name": record[6],
+            "timestamp": record[7],
+            "expire": record[8],
+            "access": record[9]
+        }
+
+        users.append(user)
+
     connection.close()
+
+    timestamp = users[0]['timestamp']
+    expire = timestamp + datetime.timedelta(days=int(days))
+
+    cursor2, connection2 = database()
+
+    cursor2.execute("UPDATE USERS SET expire = ? WHERE username = ?", (expire, username,))
+
+    connection2.commit()
+    connection2.close()
 
     response['message'] = "User time updated"
 
