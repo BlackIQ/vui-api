@@ -624,7 +624,7 @@ def update_client_access(username):
 
     cursor, connection = database()
 
-    cursor.execute("UPDATE USERS SET access = ? WHERE username = ?", tuple(access, username,))
+    cursor.execute("UPDATE USERS SET access = ? WHERE username = ?", (access, username,))
 
     connection.commit()
     connection.close()
