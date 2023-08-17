@@ -306,7 +306,7 @@ def register_admin():
 
         return jsonify(response), 400
 
-    script_path = os.path.join(path, 'scripts/create.sh')
+    script_path = os.path.join(path, 'scripts/crud/create.sh')
     execution = execute(script_path, username, password)
 
     timestamp = datetime.datetime.now()
@@ -536,7 +536,7 @@ def create_client():
 
         return jsonify(response), 400
 
-    script_path = os.path.join(path, 'scripts/create.sh')
+    script_path = os.path.join(path, 'scripts/crud/create.sh')
     execution = execute(script_path, username, password)
 
     timestamp = datetime.datetime.now()
@@ -622,7 +622,7 @@ def delete_client(username):
 
     cursor, connection = database()
 
-    script_path = os.path.join(path, 'scripts/delete.sh')
+    script_path = os.path.join(path, 'scripts/crud/delete.sh')
     execution = execute(script_path, username)
 
     if execution:
@@ -850,7 +850,7 @@ def migration():
     users = [{'username': i[1], 'password': i[2]} for i in cursor.fetchall()]
 
     for user in users:
-        script_path = os.path.join(path, 'scripts/create.sh')
+        script_path = os.path.join(path, 'scripts/crud/create.sh')
         execution = execute(script_path, user['username'], user['password'])
 
         if execution:
@@ -901,7 +901,7 @@ def expired():
             "access": record[9]
         }
 
-        script_path = os.path.join(path, 'scripts/delete.sh')
+        script_path = os.path.join(path, 'scripts/crud/delete.sh')
         execution = execute(script_path, record[1])
 
         if execution:
