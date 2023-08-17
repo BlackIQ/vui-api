@@ -653,6 +653,30 @@ def update_client_access(username):
         response['message'] = 'Sorry, an error!'
 
         return jsonify(response), 500
+    
+# Update Client Access
+@app.route('/api/clients/days/<username>', methods=['PATCH'])
+@apiKey
+def update_client_days(username):
+    response = {}
+
+    days = request.json["days"]
+
+    username = username.split('/')[-1]
+
+    timestamp = datetime.datetime.now()
+    expire = timestamp + datetime.timedelta(days=int(days))
+
+    cursor, connection = database()
+
+    cursor.execute("UPDATE USERS SET expire = ? WHERE username = ?", (expire, username,))
+
+    connection.commit()
+    connection.close()
+
+    response['message'] = "User time updated"
+
+    return jsonify(response), 200
 
 
 # Delete Client
