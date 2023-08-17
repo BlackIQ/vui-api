@@ -915,13 +915,13 @@ def expired():
     current = datetime.datetime.now()
 
     cursor.execute(
-        'SELECT * FROM USERS WHERE role = "client" AND expire <= ?', (current,))
+        'SELECT * FROM USERS WHERE role = "client" AND expire <= ? AND access = ?', (current, True))
     results = cursor.fetchall()
 
     connection.close()
 
     users = []
-    messages = ["Action: Delete expireds", "Role: System", "Deleted users:"]
+    messages = ["Action: Disable expireds", "Role: System", "Deleted users:"]
 
     for record in results:
         cursor_l, connection_l = database()
@@ -938,12 +938,12 @@ def expired():
             "access": record[9]
         }
 
-        script_path = os.path.join(path, 'scripts/crud/delete.sh')
+        script_path = os.path.join(path, 'scripts/access/disable.sh')
         execution = execute(script_path, record[1])
 
         if execution:
             cursor_l.execute(
-                'DELETE FROM USERS WHERE username = ?', (record[1],))
+                'UPDATE USERS SET access = ? WHERE username = ?', (False, record[1],))
 
             connection_l.commit()
             connection_l.close()
