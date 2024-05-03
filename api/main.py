@@ -105,7 +105,7 @@ def register_god():
     timestamp = datetime.datetime.now()
 
     cursor.execute(
-        'INSERT INTO USERS (username, password, role, chatid, name, owner, timestamp) VALUES (?, ?, ?, ?, ?, timestamp)', (username, password, "god", chatid, name, "god", timestamp,))
+        'INSERT INTO USERS (username, password, role, chatid, owner, timestamp) VALUES (?, ?, ?, ?, ?, timestamp)', (username, password, "god", chatid, "god", timestamp,))
 
     connection.commit()
     connection.close()
@@ -313,7 +313,7 @@ def register_admin():
 
     if execution:
         cursor.execute(
-            'INSERT INTO USERS (username, password, role, name, owner, timestamp) VALUES (?, ?, ?, ?, ?)', (username, password, "admin", name, owner, timestamp,))
+            'INSERT INTO USERS (username, password, role, owner, timestamp) VALUES (?, ?, ?, ?, ?)', (username, password, "admin", owner, timestamp,))
 
         connection.commit()
         connection.close()
@@ -544,8 +544,8 @@ def create_client():
 
     if execution:
         cursor.execute(
-            'INSERT INTO USERS (username, password, role, owner, name, timestamp, expire, access) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-            (username, password, "client", owner, name, timestamp, expire, True)
+            'INSERT INTO USERS (username, password, role, owner, timestamp, expire, access) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+            (username, password, "client", owner, timestamp, expire, True)
         )
 
         connection.commit()
