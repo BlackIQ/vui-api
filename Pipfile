@@ -7,10 +7,6 @@ name = "pypi"
 flask = "*"
 flask-cors = "*"
 python-dotenv = "*"
-flask-jwt-extended = "*"
-pyjwt = "*"
-python-telegram-bot = "*"
-requests = "*"
 
 [dev-packages]
 
