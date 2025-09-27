@@ -1,34 +1,36 @@
 import sqlite3
 
-# Connect to the SQLite database
-conn = sqlite3.connect('vui.db')
-cursor = conn.cursor()
+from api.config.config import DB_NAME
 
-# Create the log table
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS LOGS (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username VARCHAR(50),
-        action VARCHAR(50),
-        role VARCHAR(50),
-        level INT,
-        creator VARCHAR(50)
-    )
-''')
+# Connect to the SQLite database
+conn = sqlite3.connect(DB_NAME)
+cursor = conn.cursor()
 
 # Create the users table
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS USERS (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         username VARCHAR(50),
-        password VARCHAR(50),
+        password VARCHAR(50)
+    )
+''')
+
+# Create the clients table
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS CLIENTS (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         name VARCHAR(50),
-        role VARCHAR(50),
-        chatid INT,
-        owner VARCHAR(50),
-        timestamp DATETIME,
-        expire DATETIME,
+        username VARCHAR(50),
+        password VARCHAR(50),
         access BOOLEAN
+    )
+''')
+
+# Create the config table
+cursor.execute('''
+    CREATE TABLE IF NOT EXISTS CONFIGS (
+        key VARCHAR(50),
+        value VARCHAR(50)
     )
 ''')
 
