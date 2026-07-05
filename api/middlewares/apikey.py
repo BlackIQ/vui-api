@@ -1,6 +1,6 @@
 from flask import request, jsonify
 
-from api.config.config import env
+from api.config.db import KEY
 
 from functools import wraps
 
@@ -10,7 +10,7 @@ def apiKey(func):
     def decorated_function(*args, **kwargs):
         api_key = request.headers.get('apiKey')
 
-        if api_key and api_key == env["API_KEY"]:
+        if api_key and api_key == KEY:
             return func(*args, **kwargs)
         else:
             return jsonify({'message': 'Unauthorized'}), 401

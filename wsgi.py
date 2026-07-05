@@ -1,6 +1,6 @@
 from api.main import app
 
-from api.config.config import env
+from api.config.db import PORT
 
 if __name__ == "__main__":
-    app.run("0.0.0.0", port=env["APP_PORT"], debug=True)
+    app.run("0.0.0.0", port=PORT, debug=True)
